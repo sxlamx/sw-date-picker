@@ -23,3 +23,28 @@ describe('SelectionState', () => {
     expect(s.get()).toBeNull();
   });
 });
+
+import { DateRangeState } from '../../src/ui/selection.js';
+
+describe('DateRangeState', () => {
+  it('stores start and end', () => {
+    const r = new DateRangeState();
+    r.setStart({ y: 2026, m: 12, d: 1 });
+    r.setEnd({ y: 2026, m: 12, d: 25 });
+    expect(r.getStart()).toEqual({ y: 2026, m: 12, d: 1 });
+    expect(r.getEnd()).toEqual({ y: 2026, m: 12, d: 25 });
+    expect(r.isComplete()).toBe(true);
+  });
+  it('auto-swaps if end is before start', () => {
+    const r = new DateRangeState();
+    r.setStart({ y: 2026, m: 12, d: 25 });
+    r.setEnd({ y: 2026, m: 12, d: 1 });
+    expect(r.getStart().d).toBe(1);
+    expect(r.getEnd().d).toBe(25);
+  });
+  it('is not complete without both ends', () => {
+    const r = new DateRangeState();
+    r.setStart({ y: 2026, m: 12, d: 1 });
+    expect(r.isComplete()).toBe(false);
+  });
+});
