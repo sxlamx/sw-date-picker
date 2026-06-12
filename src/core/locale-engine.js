@@ -33,7 +33,7 @@ export function firstDayOfWeek(locale) {
 }
 
 function getName(locale, type, style) {
-  const fmt = new Intl.DateTimeFormat(locale, { [type]: style });
+  const fmt = new Intl.DateTimeFormat(locale, { [type]: style, timeZone: 'UTC' });
   // 2026-01-04 is a Sunday; iterate forward to get all 7 weekdays.
   const jan4 = new Date(Date.UTC(2026, 0, 4));
   if (type === 'month') {
@@ -70,11 +70,13 @@ export function weekdayNames(locale, style = 'short') {
 }
 
 const RTL_LOCALES = new Set([
-  'ar', 'arc', 'az', 'az-Arab', 'dv', 'fa', 'he', 'ku', 'ks', 'mzn', 'nqo', 'pnb', 'ps', 'sd', 'sd-Arab', 'ug', 'ur', 'yi',
+  'ar', 'arc', 'az-Arab', 'dv', 'fa', 'he', 'ku', 'ks', 'mzn', 'nqo', 'pnb', 'ps', 'sd', 'sd-Arab', 'ug', 'ur', 'yi',
 ]);
 
 export function isRTL(locale) {
-  const base = String(locale).split('-')[0].toLowerCase();
+  const tag = String(locale);
+  const base = tag.split('-')[0].toLowerCase();
+  if (RTL_LOCALES.has(tag)) return true;
   return RTL_LOCALES.has(base);
 }
 

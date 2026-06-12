@@ -75,6 +75,12 @@ describe('rtl', () => {
     expect(resolveRTL('ar-SA', 'auto')).toBe(true);
     expect(resolveRTL('en-US', 'auto')).toBe(false);
   });
+  it('returns false for az-Latn (script distinguishes RTL forms)', () => {
+    expect(isRTL('az-Latn')).toBe(false);
+  });
+  it('returns true for az-Arab', () => {
+    expect(isRTL('az-Arab')).toBe(true);
+  });
 });
 
 describe('dayPeriodLabels', () => {
