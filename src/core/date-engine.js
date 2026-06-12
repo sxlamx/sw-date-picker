@@ -77,3 +77,15 @@ export function diffInDays(a, b) {
   const ub = Date.UTC(b.y, b.m - 1, b.d);
   return Math.round((ub - ua) / 86_400_000);
 }
+
+export function toISODate(date) {
+  return { y: date.getFullYear(), m: date.getMonth() + 1, d: date.getDate() };
+}
+
+export function fromISODate(isoDate) {
+  return new Date(Date.UTC(isoDate.y, isoDate.m - 1, isoDate.d));
+}
+
+export function todayISO() {
+  return formatISO(new Date());
+}

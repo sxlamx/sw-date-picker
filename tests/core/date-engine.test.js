@@ -1,8 +1,10 @@
 import { describe, it, expect } from 'vitest';
 import { isLeapYear, daysInMonth } from '../../src/core/date-engine.js';
 import { parseISODate, formatISO } from '../../src/core/date-engine.js';
+import { todayInUTC } from '../../src/core/date-engine.js';
 import { addDays, addMonths, addYears } from '../../src/core/date-engine.js';
 import { compareISODate, isSameISODate, isBetween, diffInDays } from '../../src/core/date-engine.js';
+import { toISODate, fromISODate, todayISO } from '../../src/core/date-engine.js';
 
 describe('isLeapYear', () => {
   it('handles century rules', () => {
@@ -85,5 +87,21 @@ describe('comparisons', () => {
   it('diffInDays across DST is calendar-day diff, not 23/25 hours', () => {
     // Use UTC dates that straddle a US DST transition (Mar 8-9, 2026).
     expect(diffInDays({ y: 2026, m: 3, d: 8 }, { y: 2026, m: 3, d: 15 })).toBe(7);
+  });
+});
+
+describe('toISODate/fromISODate', () => {
+  it('round-trips a UTC date', () => {
+    const d = new Date(Date.UTC(2026, 11, 25, 12, 30));
+    expect(toISODate(d)).toEqual({ y: 2026, m: 12, d: 25 });
+    expect(fromISODate({ y: 2026, m: 12, d: 25 }).toISOString()).toBe('2026-12-25T00:00:00.000Z');
+  });
+  it('uses local calendar day for non-UTC date', () => {
+    // Documented behavior: uses local components, not UTC, to match user-visible day.
+    const d = new Date(2026, 11, 25, 0, 0);
+    expect(toISODate(d)).toEqual({ y: 2026, m: 12, d: 25 });
+  });
+  it('todayISO matches todayInUTC output', () => {
+    expect(todayISO()).toBe(todayInUTC());
   });
 });
