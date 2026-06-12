@@ -31,3 +31,40 @@ export function firstDayOfWeek(locale) {
     return 0;
   }
 }
+
+function getName(locale, type, style) {
+  const fmt = new Intl.DateTimeFormat(locale, { [type]: style });
+  // 2026-01-04 is a Sunday; iterate forward to get all 7 weekdays.
+  const jan4 = new Date(Date.UTC(2026, 0, 4));
+  if (type === 'month') {
+    return Array.from({ length: 12 }, (_, i) => {
+      const d = new Date(Date.UTC(2026, i, 15));
+      return fmt.format(d);
+    });
+  }
+  // weekday — build the Sun-first list, then rotate so the locale's first
+  // day is at index 0.
+  const sunFirst = Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(jan4);
+    d.setUTCDate(jan4.getUTCDate() + i);
+    return fmt.format(d);
+  });
+  const offset = firstDayOfWeek(locale);
+  return [...sunFirst.slice(offset), ...sunFirst.slice(0, offset)];
+}
+
+export function monthNames(locale, style = 'long') {
+  try {
+    return getName(locale, 'month', style);
+  } catch {
+    return monthNames('en-US', style);
+  }
+}
+
+export function weekdayNames(locale, style = 'short') {
+  try {
+    return getName(locale, 'weekday', style);
+  } catch {
+    return weekdayNames('en-US', style);
+  }
+}

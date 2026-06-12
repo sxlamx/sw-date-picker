@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { resolveLocale, firstDayOfWeek } from '../../src/core/locale-engine.js';
+import { resolveLocale, firstDayOfWeek, monthNames, weekdayNames } from '../../src/core/locale-engine.js';
 
 describe('resolveLocale', () => {
   it('returns provided valid locale', () => {
@@ -31,5 +31,31 @@ describe('firstDayOfWeek', () => {
   });
   it('falls back to 0 for unknown', () => {
     expect(firstDayOfWeek('xx-NOPE')).toBe(0);
+  });
+});
+
+describe('monthNames', () => {
+  it('en-US yields English month names', () => {
+    const months = monthNames('en-US', 'long');
+    expect(months[0]).toBe('January');
+    expect(months[11]).toBe('December');
+  });
+  it('fr-FR yields French month names', () => {
+    const months = monthNames('fr-FR', 'long');
+    expect(months[0]).toMatch(/janvier/i);
+  });
+  it('short variant', () => {
+    expect(monthNames('en-US', 'short')[0]).toBe('Jan');
+  });
+});
+
+describe('weekdayNames', () => {
+  it('en-US starts with Sunday in long form', () => {
+    const wd = weekdayNames('en-US', 'short');
+    expect(wd).toEqual(['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']);
+  });
+  it('en-GB long form starts with Monday', () => {
+    const wd = weekdayNames('en-GB', 'long');
+    expect(wd[0]).toBe('Monday');
   });
 });
