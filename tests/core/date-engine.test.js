@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { isLeapYear, daysInMonth } from '../../src/core/date-engine.js';
 import { parseISODate, formatISO } from '../../src/core/date-engine.js';
+import { addDays, addMonths, addYears } from '../../src/core/date-engine.js';
 
 describe('isLeapYear', () => {
   it('handles century rules', () => {
@@ -41,5 +42,22 @@ describe('parseISODate', () => {
   });
   it('accepts 31/02/2026 as invalid (no auto-correction)', () => {
     expect(() => parseISODate('2026-02-31')).toThrow();
+  });
+});
+
+describe('date arithmetic', () => {
+  it('addDays cross-month', () => {
+    expect(addDays({ y: 2026, m: 1, d: 31 }, 1)).toEqual({ y: 2026, m: 2, d: 1 });
+    expect(addDays({ y: 2024, m: 2, d: 28 }, 2)).toEqual({ y: 2024, m: 3, d: 1 });
+  });
+  it('addDays negative', () => {
+    expect(addDays({ y: 2026, m: 1, d: 1 }, -1)).toEqual({ y: 2025, m: 12, d: 31 });
+  });
+  it('addMonths clamps day to month length', () => {
+    expect(addMonths({ y: 2026, m: 1, d: 31 }, 1)).toEqual({ y: 2026, m: 2, d: 28 });
+    expect(addMonths({ y: 2024, m: 1, d: 31 }, 1)).toEqual({ y: 2024, m: 2, d: 29 });
+  });
+  it('addYears handles Feb 29', () => {
+    expect(addYears({ y: 2024, m: 2, d: 29 }, 1)).toEqual({ y: 2025, m: 2, d: 28 });
   });
 });

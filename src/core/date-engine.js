@@ -39,3 +39,21 @@ export function parseISODate(str) {
   if (d < 1 || d > daysInMonth(y, mo)) throw new RangeError('invalid day');
   return { y, m: mo, d };
 }
+
+export function addDays(isoDate, n) {
+  const utc = new Date(Date.UTC(isoDate.y, isoDate.m - 1, isoDate.d));
+  utc.setUTCDate(utc.getUTCDate() + n);
+  return { y: utc.getUTCFullYear(), m: utc.getUTCMonth() + 1, d: utc.getUTCDate() };
+}
+
+export function addMonths(isoDate, n) {
+  const utc = new Date(Date.UTC(isoDate.y, isoDate.m - 1 + n, 1));
+  const y = utc.getUTCFullYear();
+  const m = utc.getUTCMonth() + 1;
+  const d = Math.min(isoDate.d, daysInMonth(y, m));
+  return { y, m, d };
+}
+
+export function addYears(isoDate, n) {
+  return addMonths(isoDate, n * 12);
+}
