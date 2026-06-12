@@ -13,11 +13,7 @@ export class SelectionState {
   }
 }
 
-function _compareISODate(a, b) {
-  if (a.y !== b.y) return a.y - b.y;
-  if (a.m !== b.m) return a.m - b.m;
-  return a.d - b.d;
-}
+import { compareISODate } from '../core/date-engine.js';
 
 export class DateRangeState {
   constructor() {
@@ -33,7 +29,7 @@ export class DateRangeState {
     this._normalize();
   }
   _normalize() {
-    if (this._start && this._end && _compareISODate(this._start, this._end) > 0) {
+    if (this._start && this._end && compareISODate(this._start, this._end) > 0) {
       [this._start, this._end] = [this._end, this._start];
     }
   }
