@@ -25,3 +25,17 @@ export function daysInMonth(year, month) {
   if ([4, 6, 9, 11].includes(month)) return 30;
   return isLeapYear(year) ? 29 : 28;
 }
+
+const ISO_RE = /^(\d{4})-(\d{1,2})-(\d{1,2})$/;
+
+export function parseISODate(str) {
+  if (typeof str !== 'string') throw new TypeError('expected string');
+  const m = ISO_RE.exec(str);
+  if (!m) throw new RangeError('not ISO YYYY-MM-DD');
+  const y = Number(m[1]);
+  const mo = Number(m[2]);
+  const d = Number(m[3]);
+  if (mo < 1 || mo > 12) throw new RangeError('invalid month');
+  if (d < 1 || d > daysInMonth(y, mo)) throw new RangeError('invalid day');
+  return { y, m: mo, d };
+}
