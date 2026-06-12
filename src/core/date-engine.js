@@ -57,3 +57,23 @@ export function addMonths(isoDate, n) {
 export function addYears(isoDate, n) {
   return addMonths(isoDate, n * 12);
 }
+
+export function compareISODate(a, b) {
+  if (a.y !== b.y) return a.y - b.y;
+  if (a.m !== b.m) return a.m - b.m;
+  return a.d - b.d;
+}
+
+export function isSameISODate(a, b) {
+  return compareISODate(a, b) === 0;
+}
+
+export function isBetween(target, start, end) {
+  return compareISODate(target, start) >= 0 && compareISODate(target, end) <= 0;
+}
+
+export function diffInDays(a, b) {
+  const ua = Date.UTC(a.y, a.m - 1, a.d);
+  const ub = Date.UTC(b.y, b.m - 1, b.d);
+  return Math.round((ub - ua) / 86_400_000);
+}
