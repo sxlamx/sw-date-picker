@@ -68,3 +68,24 @@ export function weekdayNames(locale, style = 'short') {
     return weekdayNames('en-US', style);
   }
 }
+
+const RTL_LOCALES = new Set([
+  'ar', 'arc', 'az', 'az-Arab', 'dv', 'fa', 'he', 'ku', 'ks', 'mzn', 'nqo', 'pnb', 'ps', 'sd', 'sd-Arab', 'ug', 'ur', 'yi',
+]);
+
+export function isRTL(locale) {
+  const base = String(locale).split('-')[0].toLowerCase();
+  return RTL_LOCALES.has(base);
+}
+
+export function resolveRTL(locale, rtl) {
+  if (rtl === true || rtl === false) return rtl;
+  return isRTL(locale);
+}
+
+export function dayPeriodLabels(locale) {
+  const fmt = new Intl.DateTimeFormat(locale, { hour: 'numeric', hour12: true, timeZone: 'UTC' });
+  const am = fmt.formatToParts(new Date(Date.UTC(2026, 0, 1, 9))).find((p) => p.type === 'dayPeriod')?.value ?? 'AM';
+  const pm = fmt.formatToParts(new Date(Date.UTC(2026, 0, 1, 21))).find((p) => p.type === 'dayPeriod')?.value ?? 'PM';
+  return { am, pm };
+}

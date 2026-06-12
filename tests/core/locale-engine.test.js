@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { resolveLocale, firstDayOfWeek, monthNames, weekdayNames } from '../../src/core/locale-engine.js';
+import { resolveLocale, firstDayOfWeek, monthNames, weekdayNames, isRTL, resolveRTL, dayPeriodLabels } from '../../src/core/locale-engine.js';
 
 describe('resolveLocale', () => {
   it('returns provided valid locale', () => {
@@ -57,5 +57,30 @@ describe('weekdayNames', () => {
   it('en-GB long form starts with Monday', () => {
     const wd = weekdayNames('en-GB', 'long');
     expect(wd[0]).toBe('Monday');
+  });
+});
+
+describe('rtl', () => {
+  it('detects Arabic as RTL', () => {
+    expect(isRTL('ar-SA')).toBe(true);
+  });
+  it('English is LTR', () => {
+    expect(isRTL('en-US')).toBe(false);
+  });
+  it('resolveRTL honors explicit true/false', () => {
+    expect(resolveRTL('en-US', true)).toBe(true);
+    expect(resolveRTL('ar-SA', false)).toBe(false);
+  });
+  it('resolveRTL auto from locale', () => {
+    expect(resolveRTL('ar-SA', 'auto')).toBe(true);
+    expect(resolveRTL('en-US', 'auto')).toBe(false);
+  });
+});
+
+describe('dayPeriodLabels', () => {
+  it('returns AM/PM in en-US', () => {
+    const labels = dayPeriodLabels('en-US');
+    expect(labels.am.toLowerCase()).toBe('am');
+    expect(labels.pm.toLowerCase()).toBe('pm');
   });
 });
