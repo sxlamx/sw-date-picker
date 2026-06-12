@@ -4,6 +4,7 @@ import {
   isValidTimeZone,
   isValidYear,
   isValidISODateString,
+  isValidISODateTimeString,
   assertSafeConfig,
 } from '../../src/security/validator.js';
 
@@ -29,6 +30,13 @@ describe('validator', () => {
     expect(isValidISODateString('2026-12-25')).toBe(true);
     expect(isValidISODateString('2026-13-01')).toBe(false);
     expect(isValidISODateString('not a date')).toBe(false);
+  });
+  it('isValidISODateTimeString', () => {
+    expect(isValidISODateTimeString('2026-12-25T12:30:00Z')).toBe(true);
+    expect(isValidISODateTimeString('2026-13-01T00:00:00Z')).toBe(false);
+    expect(isValidISODateTimeString('2026-02-30T12:00:00Z')).toBe(false);
+    expect(isValidISODateTimeString('2026-12-25T12:30:00+02:00')).toBe(false);
+    expect(isValidISODateTimeString('2026-12-25')).toBe(false);
   });
   it('assertSafeConfig rejects prototype pollution', () => {
     expect(() => assertSafeConfig({ __proto__: { polluted: true } })).toThrow();

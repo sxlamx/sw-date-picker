@@ -44,7 +44,9 @@ export function isValidISODateString(str) {
 }
 
 export function isValidISODateTimeString(str) {
-  return typeof str === 'string' && ISO_DT_RE.test(str);
+  if (typeof str !== 'string' || !ISO_DT_RE.test(str)) return false;
+  const datePart = str.slice(0, 10); // "YYYY-MM-DD"
+  return isValidISODateString(datePart);
 }
 
 export function assertSafeConfig(obj) {
