@@ -27,3 +27,14 @@ describe('FocusTrap', () => {
     container.remove();
   });
 });
+
+import { announce } from '../../src/ui/accessibility.js';
+
+describe('announce', () => {
+  it('creates an aria-live region and sets text', () => {
+    announce('December 2026');
+    const live = document.querySelector('[aria-live="assertive"]');
+    expect(live).toBeTruthy();
+    expect(live.textContent).toBe('December 2026');
+  });
+});

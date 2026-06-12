@@ -21,4 +21,20 @@ export class FocusTrap {
     prev.focus();
   }
 }
-export function announce(message) {}
+
+let _liveRegion = null;
+export function announce(message) {
+  if (!_liveRegion) {
+    const el = document.createElement('div');
+    el.setAttribute('aria-live', 'assertive');
+    el.setAttribute('aria-atomic', 'true');
+    el.style.position = 'absolute';
+    el.style.left = '-10000px';
+    el.style.width = '1px';
+    el.style.height = '1px';
+    el.style.overflow = 'hidden';
+    document.body.appendChild(el);
+    _liveRegion = el;
+  }
+  _liveRegion.textContent = message;
+}
