@@ -1,5 +1,5 @@
 import { safeParseISODate } from '../security/safe-parser.js';
-import { daysInMonth } from './date-engine.js';
+import { daysInMonth, addDays } from './date-engine.js';
 
 const SEPARATORS = ['/', '.', '-', ' '];
 
@@ -43,4 +43,37 @@ export function parseUserInput(input, locale) {
   const parts = splitParts(trimmed);
   if (!parts) return null;
   return orderToObject(parts, dayMonthYearOrder(locale));
+}
+
+const WEEKDAY_BY_NAME = {
+  sunday: 0, sun: 0,
+  monday: 1, mon: 1,
+  tuesday: 2, tue: 2, tues: 2,
+  wednesday: 3, wed: 3,
+  thursday: 4, thu: 4, thur: 4, thurs: 4,
+  friday: 5, fri: 5,
+  saturday: 6, sat: 6,
+};
+
+function dayOfWeekFromISO({ y, m, d }) {
+  return new Date(Date.UTC(y, m - 1, d)).getUTCDay();
+}
+
+export function parseNaturalInput(input, refISO) {
+  if (typeof input !== 'string') return null;
+  const text = input.trim().toLowerCase();
+  if (!text) return null;
+  if (text === 'today') return { ...refISO };
+  if (text === 'tomorrow') return addDays(refISO, 1);
+  if (text === 'yesterday') return addDays(refISO, -1);
+  const nextMatch = /^next\s+([a-z]+)$/.exec(text);
+  if (nextMatch) {
+    const target = WEEKDAY_BY_NAME[nextMatch[1]];
+    if (target == null) return null;
+    const todayDow = dayOfWeekFromISO(refISO);
+    let delta = (target - todayDow + 7) % 7;
+    if (delta === 0) delta = 7; // "next friday" on a Friday is 7 days ahead.
+    return addDays(refISO, delta);
+  }
+  return null;
 }

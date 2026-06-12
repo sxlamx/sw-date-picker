@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { parseUserInput } from '../../src/core/parser.js';
+import { parseUserInput, parseNaturalInput } from '../../src/core/parser.js';
 
 describe('parseUserInput', () => {
   it('parses ISO YYYY-MM-DD regardless of locale', () => {
@@ -27,5 +27,26 @@ describe('parseUserInput', () => {
     expect(parseUserInput('abcd', 'en-US')).toBeNull();
     expect(parseUserInput('', 'en-US')).toBeNull();
     expect(parseUserInput('31/02/2026', 'en-GB')).toBeNull();
+  });
+});
+
+describe('parseNaturalInput', () => {
+  it('parses today, tomorrow, yesterday', () => {
+    const ref = { y: 2026, m: 6, d: 12 };
+    expect(parseNaturalInput('today', ref)).toEqual({ y: 2026, m: 6, d: 12 });
+    expect(parseNaturalInput('tomorrow', ref)).toEqual({ y: 2026, m: 6, d: 13 });
+    expect(parseNaturalInput('yesterday', ref)).toEqual({ y: 2026, m: 6, d: 11 });
+  });
+  it('parses "next friday" (always forward)', () => {
+    // 2026-06-12 is a Friday -> next friday is 2026-06-19.
+    const ref = { y: 2026, m: 6, d: 12 };
+    expect(parseNaturalInput('next friday', ref)).toEqual({ y: 2026, m: 6, d: 19 });
+  });
+  it('parses "next monday" from a Friday ref', () => {
+    const ref = { y: 2026, m: 6, d: 12 };
+    expect(parseNaturalInput('next monday', ref)).toEqual({ y: 2026, m: 6, d: 15 });
+  });
+  it('returns null for unrecognized phrases', () => {
+    expect(parseNaturalInput('quokka tomorrow', { y: 2026, m: 6, d: 12 })).toBeNull();
   });
 });
