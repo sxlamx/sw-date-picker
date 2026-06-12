@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { formatDate } from '../../src/core/formatter.js';
+import { formatDate, formatDateTime } from '../../src/core/formatter.js';
 
 describe('formatDate', () => {
   it('formats en-US default as M/D/YYYY', () => {
@@ -18,5 +18,16 @@ describe('formatDate', () => {
   });
   it('handles invalid input by returning empty string', () => {
     expect(formatDate(null, 'en-US')).toBe('');
+  });
+});
+
+describe('formatDateTime', () => {
+  it('formats datetime in 24h by default', () => {
+    const out = formatDateTime({ y: 2026, mo: 12, d: 25, h: 15, mi: 30, s: 0 }, 'en-GB', false);
+    expect(out).toMatch(/15:30/);
+  });
+  it('formats 12h with AM/PM when enabled', () => {
+    const out = formatDateTime({ y: 2026, mo: 12, d: 25, h: 15, mi: 30, s: 0 }, 'en-US', true);
+    expect(out).toMatch(/3:30\s*PM/);
   });
 });
