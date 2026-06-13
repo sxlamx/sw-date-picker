@@ -1,2 +1,4 @@
-// Public DatePicker class is added in Task 11.1.
-export {};
+export { DatePicker } from './datepicker.js';
+export { parseISODate, formatISO, todayISO, isSameISODate, compareISODate } from './core/date-engine.js';
+export { resolveLocale } from './core/locale-engine.js';
+

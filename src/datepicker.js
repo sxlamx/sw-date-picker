@@ -1,6 +1,6 @@
-import { todayISO, addDays, isSameISODate } from './core/date-engine.js';
+import { todayISO, addDays } from './core/date-engine.js';
 import { resolveLocale, firstDayOfWeek, weekdayNames } from './core/locale-engine.js';
-import { buildMonthMatrix, renderMonthGrid } from './ui/calendar.js';
+import { renderMonthGrid } from './ui/calendar.js';
 import { Popup } from './ui/popup.js';
 import { shiftView } from './ui/navigation.js';
 import { keyToAction, ACTION } from './ui/keyboard.js';

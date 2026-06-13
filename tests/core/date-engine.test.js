@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { isLeapYear, daysInMonth } from '../../src/core/date-engine.js';
-import { parseISODate, formatISO } from '../../src/core/date-engine.js';
+import { parseISODate } from '../../src/core/date-engine.js';
 import { todayInUTC } from '../../src/core/date-engine.js';
 import { addDays, addMonths, addYears } from '../../src/core/date-engine.js';
 import { compareISODate, isSameISODate, isBetween, diffInDays } from '../../src/core/date-engine.js';
