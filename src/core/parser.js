@@ -35,7 +35,7 @@ function orderToObject(parts, order) {
 }
 
 export function parseUserInput(input, locale) {
-  if (typeof input !== 'string') return null;
+  if (typeof input !== 'string' || input.length > 50) return null;
   const trimmed = input.trim();
   if (!trimmed) return null;
   const iso = safeParseISODate(trimmed);
@@ -60,7 +60,7 @@ function dayOfWeekFromISO({ y, m, d }) {
 }
 
 export function parseNaturalInput(input, refISO) {
-  if (typeof input !== 'string') return null;
+  if (typeof input !== 'string' || input.length > 50) return null;
   const text = input.trim().toLowerCase();
   if (!text) return null;
   if (text === 'today') return { ...refISO };
