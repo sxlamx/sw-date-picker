@@ -104,25 +104,93 @@ div#inline > div {
 
 .sw-datepicker-month-select,
 .sw-datepicker-year-select {
-  background: transparent;
-  border: none;
+  position: relative;
   font-size: 14px;
   font-weight: 600;
   color: var(--sw-dp-text-main);
-  padding: 4px 6px;
   border-radius: 6px;
   cursor: pointer;
-  transition: var(--sw-dp-transition);
   outline: none;
-  -webkit-appearance: none;
-  appearance: none;
+  user-select: none;
 }
 
-.sw-datepicker-month-select:hover,
-.sw-datepicker-year-select:hover,
-.sw-datepicker-month-select:focus,
-.sw-datepicker-year-select:focus {
+.sw-datepicker-select-trigger {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 6px;
+  border-radius: 6px;
+  transition: var(--sw-dp-transition);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.sw-datepicker-select-trigger::after {
+  content: '';
+  display: inline-block;
+  width: 0;
+  height: 0;
+  border-left: 3.5px solid transparent;
+  border-right: 3.5px solid transparent;
+  border-top: 4px solid currentColor;
+  opacity: 0.5;
+  margin-top: 1px;
+  flex-shrink: 0;
+}
+
+.sw-datepicker-month-select:hover .sw-datepicker-select-trigger,
+.sw-datepicker-year-select:hover .sw-datepicker-select-trigger,
+.sw-datepicker-month-select:focus .sw-datepicker-select-trigger,
+.sw-datepicker-year-select:focus .sw-datepicker-select-trigger {
   background: var(--sw-dp-cell-hover);
+}
+
+.sw-datepicker-month-select:focus .sw-datepicker-select-trigger,
+.sw-datepicker-year-select:focus .sw-datepicker-select-trigger {
+  box-shadow: 0 0 0 2px var(--sw-dp-accent);
+}
+
+.sw-datepicker-select-listbox {
+  position: absolute;
+  z-index: 10000;
+  top: calc(100% + 4px);
+  left: 0;
+  right: auto;
+  background: var(--sw-dp-bg);
+  border: 1px solid var(--sw-dp-border);
+  box-shadow: var(--sw-dp-shadow);
+  border-radius: 8px;
+  padding: 4px;
+  margin: 0;
+  list-style: none;
+  max-height: 200px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-width: 100%;
+  max-width: 160px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  animation: sw-dp-fade-in 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.sw-datepicker-select-option {
+  padding: 6px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--sw-dp-text-main);
+  white-space: nowrap;
+}
+
+.sw-datepicker-select-option--highlighted {
+  background: var(--sw-dp-cell-hover);
+}
+
+.sw-datepicker-select-option--selected {
+  color: var(--sw-dp-accent);
+  font-weight: 600;
 }
 
 /* Month grid and rows */

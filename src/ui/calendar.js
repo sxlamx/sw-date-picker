@@ -29,6 +29,126 @@ export function isInRange(iso, start, end) {
   return compareISODate(iso, start) >= 0 && compareISODate(iso, end) <= 0;
 }
 
+function buildCustomSelect(className, options, selectedValue, ariaLabel) {
+  const wrapper = document.createElement('div');
+  wrapper.className = `sw-datepicker-custom-select ${className}`;
+  wrapper.setAttribute('role', 'combobox');
+  wrapper.setAttribute('aria-haspopup', 'listbox');
+  wrapper.setAttribute('aria-expanded', 'false');
+  wrapper.setAttribute('aria-label', ariaLabel);
+  wrapper.tabIndex = 0;
+
+  const trigger = document.createElement('span');
+  trigger.className = 'sw-datepicker-select-trigger';
+  const selected = options.find(o => o.value === selectedValue) ?? options[0];
+  setText(trigger, selected.label);
+  wrapper.appendChild(trigger);
+
+  const listbox = document.createElement('ul');
+  listbox.className = 'sw-datepicker-select-listbox';
+  listbox.setAttribute('role', 'listbox');
+  listbox.setAttribute('aria-label', ariaLabel);
+  listbox.hidden = true;
+
+  options.forEach(opt => {
+    const li = document.createElement('li');
+    li.setAttribute('role', 'option');
+    li.setAttribute('aria-selected', opt.value === selectedValue ? 'true' : 'false');
+    li.dataset.value = opt.value;
+    li.className = 'sw-datepicker-select-option';
+    if (opt.value === selectedValue) li.classList.add('sw-datepicker-select-option--selected');
+    setText(li, opt.label);
+    listbox.appendChild(li);
+  });
+
+  wrapper.appendChild(listbox);
+
+  let highlightedIdx = options.findIndex(o => o.value === selectedValue);
+
+  function open() {
+    listbox.hidden = false;
+    wrapper.setAttribute('aria-expanded', 'true');
+    // scroll selected into view
+    const selEl = listbox.querySelector('[aria-selected="true"]');
+    if (selEl) selEl.scrollIntoView({ block: 'nearest' });
+  }
+
+  function close() {
+    listbox.hidden = true;
+    wrapper.setAttribute('aria-expanded', 'false');
+  }
+
+  function selectIdx(idx) {
+    const opt = options[idx];
+    if (!opt) return;
+    setText(trigger, opt.label);
+    listbox.querySelectorAll('[role="option"]').forEach((el, i) => {
+      const isSel = i === idx;
+      el.setAttribute('aria-selected', isSel ? 'true' : 'false');
+      el.classList.toggle('sw-datepicker-select-option--selected', isSel);
+    });
+    highlightedIdx = idx;
+    wrapper.dataset.value = opt.value;
+    close();
+    wrapper.dispatchEvent(new Event('change', { bubbles: true }));
+  }
+
+  function highlight(idx) {
+    const items = listbox.querySelectorAll('[role="option"]');
+    items.forEach((el, i) => el.classList.toggle('sw-datepicker-select-option--highlighted', i === idx));
+    if (items[idx]) items[idx].scrollIntoView({ block: 'nearest' });
+    highlightedIdx = idx;
+  }
+
+  wrapper.addEventListener('click', e => {
+    const opt = e.target.closest('[role="option"]');
+    if (opt) {
+      const idx = options.findIndex(o => o.value === opt.dataset.value);
+      selectIdx(idx);
+      return;
+    }
+    if (listbox.hidden) {
+      open();
+      highlight(highlightedIdx);
+    } else {
+      close();
+    }
+  });
+
+  wrapper.addEventListener('keydown', e => {
+    if (listbox.hidden) {
+      if (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        open();
+        highlight(highlightedIdx);
+      }
+      return;
+    }
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      highlight(Math.min(highlightedIdx + 1, options.length - 1));
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      highlight(Math.max(highlightedIdx - 1, 0));
+    } else if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      selectIdx(highlightedIdx);
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      close();
+    }
+  });
+
+  listbox.addEventListener('mousedown', e => e.preventDefault());
+
+  wrapper.addEventListener('blur', e => {
+    if (!wrapper.contains(e.relatedTarget)) close();
+  });
+
+  wrapper.dataset.value = selectedValue;
+  return wrapper;
+}
+
 export function renderMonthGrid(root, opts) {
   const {
     view, firstDayOfWeek, today, selected, locale, weekdayNames, mode, minYear, maxYear,
@@ -53,32 +173,17 @@ export function renderMonthGrid(root, opts) {
   titleEl.className = 'sw-datepicker-title';
 
   // Month select
-  const monthSelect = document.createElement('select');
-  monthSelect.className = 'sw-datepicker-month-select';
-  monthSelect.setAttribute('aria-label', 'Select month');
   const allMonths = monthNames(locale, 'long');
-  allMonths.forEach((mName, idx) => {
-    const opt = document.createElement('option');
-    opt.value = String(idx + 1);
-    setText(opt, mName);
-    if (idx + 1 === view.m) opt.selected = true;
-    monthSelect.appendChild(opt);
-  });
+  const monthOptions = allMonths.map((mName, idx) => ({ label: mName, value: String(idx + 1) }));
+  const monthSelect = buildCustomSelect('sw-datepicker-month-select', monthOptions, String(view.m), 'Select month');
   titleEl.appendChild(monthSelect);
 
   // Year select
-  const yearSelect = document.createElement('select');
-  yearSelect.className = 'sw-datepicker-year-select';
-  yearSelect.setAttribute('aria-label', 'Select year');
   const minY = minYear ?? 1900;
   const maxY = maxYear ?? 2100;
-  for (let y = minY; y <= maxY; y++) {
-    const opt = document.createElement('option');
-    opt.value = String(y);
-    setText(opt, String(y));
-    if (y === view.y) opt.selected = true;
-    yearSelect.appendChild(opt);
-  }
+  const yearOptions = [];
+  for (let y = minY; y <= maxY; y++) yearOptions.push({ label: String(y), value: String(y) });
+  const yearSelect = buildCustomSelect('sw-datepicker-year-select', yearOptions, String(view.y), 'Select year');
   titleEl.appendChild(yearSelect);
 
   navHeader.appendChild(titleEl);

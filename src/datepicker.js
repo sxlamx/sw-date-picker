@@ -20,6 +20,8 @@ export class DatePicker {
     this.mode = options.mode ?? 'single';
     if (this.mode === 'date') this.mode = 'single';
     this.inline = options.inline ?? false;
+    this.placement = options.placement ?? 'auto';
+    this._formatFn = typeof options.format === 'function' ? options.format : null;
     this._onSelect = options.onSelect ?? (() => {});
     
     const now = new Date();
@@ -66,6 +68,7 @@ export class DatePicker {
     if (this._popup) return;
     this._popup = new Popup({
       trigger: this.input,
+      placement: this.placement,
       onClose: () => {
         this._popup = null;
         this._calendarRoot = null;
@@ -75,8 +78,8 @@ export class DatePicker {
     this._calendarRoot.addEventListener('keydown', this._keyHandler);
     this._calendarRoot.addEventListener('click', this._clickHandler);
     this._calendarRoot.addEventListener('change', this._changeHandler);
-    this._popup.open(this._calendarRoot);
     this._render();
+    this._popup.open(this._calendarRoot);
     const firstCell = this._calendarRoot.querySelector('[role="gridcell"]');
     if (firstCell) firstCell.focus();
   }
@@ -221,13 +224,15 @@ export class DatePicker {
   }
 
   _changeHandler(e) {
-    if (e.target.classList.contains('sw-datepicker-month-select')) {
-      this._view.m = Number(e.target.value);
-      this._render();
-    } else if (e.target.classList.contains('sw-datepicker-year-select')) {
-      this._view.y = Number(e.target.value);
-      this._render();
+    const el = e.target.closest('.sw-datepicker-month-select, .sw-datepicker-year-select');
+    if (!el) return;
+    const val = Number(el.dataset.value);
+    if (el.classList.contains('sw-datepicker-month-select')) {
+      this._view.m = val;
+    } else {
+      this._view.y = val;
     }
+    this._render();
   }
 
   _inputHandler() {
@@ -249,7 +254,7 @@ export class DatePicker {
           this._view = { y: start.y, m: start.m };
           this._focusedDate = start;
           this.input.removeAttribute('aria-invalid');
-          this.input.value = `${formatDate(start, this.locale)} to ${formatDate(end, this.locale)}`;
+          this.input.value = `${formatDate(start, this.locale, this._formatFn)} to ${formatDate(end, this.locale, this._formatFn)}`;
           this._render();
           return;
         }
@@ -261,7 +266,7 @@ export class DatePicker {
         this._view = { y: parsed.y, m: parsed.m };
         this._focusedDate = parsed;
         this.input.removeAttribute('aria-invalid');
-        this.input.value = formatDate(parsed, this.locale);
+        this.input.value = formatDate(parsed, this.locale, this._formatFn);
         this._render();
         return;
       }
@@ -270,7 +275,7 @@ export class DatePicker {
   }
 
   _commit(iso) {
-    const val = formatDate(iso, this.locale);
+    const val = formatDate(iso, this.locale, this._formatFn);
     this.input.value = val;
     this.input.removeAttribute('aria-invalid');
     this._onSelect({ ...iso });
@@ -282,9 +287,9 @@ export class DatePicker {
     const end = this._selection.getEnd();
     let val = '';
     if (start) {
-      val = formatDate(start, this.locale);
+      val = formatDate(start, this.locale, this._formatFn);
       if (end) {
-        val += ` to ${formatDate(end, this.locale)}`;
+        val += ` to ${formatDate(end, this.locale, this._formatFn)}`;
       }
     }
     this.input.value = val;
@@ -332,7 +337,7 @@ export class DatePicker {
           this._selection.setEnd(end);
           this._view = { y: start.y, m: start.m };
           this._focusedDate = start;
-          this.input.value = `${formatDate(start, this.locale)} to ${formatDate(end, this.locale)}`;
+          this.input.value = `${formatDate(start, this.locale, this._formatFn)} to ${formatDate(end, this.locale, this._formatFn)}`;
           this.input.removeAttribute('aria-invalid');
           this._render();
         }
@@ -343,7 +348,7 @@ export class DatePicker {
         this._selection.set(parsed);
         this._view = { y: parsed.y, m: parsed.m };
         this._focusedDate = parsed;
-        this.input.value = formatDate(parsed, this.locale);
+        this.input.value = formatDate(parsed, this.locale, this._formatFn);
         this.input.removeAttribute('aria-invalid');
         this._render();
       }

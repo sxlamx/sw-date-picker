@@ -5,12 +5,14 @@
   "type": "module",
   "main": "src/index.js",
   "module": "dist/sw-date-picker.js",
+  "style": "dist/sw-date-picker.css",
   "exports": {
     ".": {
       "import": "./src/index.js",
       "require": "./dist/sw-date-picker.js",
       "default": "./src/index.js"
-    }
+    },
+    "./dist/sw-date-picker.css": "./dist/sw-date-picker.css"
   },
   "files": [
     "src",
@@ -23,7 +25,9 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "lint": "eslint src tests",
-    "build": "esbuild src/index.js --bundle --format=esm --outfile=dist/sw-date-picker.js --minify --sourcemap"
+    "build": "esbuild src/index.js --bundle --format=esm --outfile=dist/sw-date-picker.js --minify --sourcemap",
+    "build:iife": "esbuild src/index.js --bundle --format=iife --global-name=SwDatePicker --outfile=dist/sw-date-picker.iife.js --minify --sourcemap",
+    "build:all": "npm run build && npm run build:iife"
   },
   "keywords": [
     "datepicker",
@@ -44,14 +48,14 @@
   "homepage": "https://github.com/sxlamx/sw-date-picker#readme",
   "license": "MIT",
   "devDependencies": {
-    "@playwright/test": "^1.60.0",
+    "@playwright/test": "^1.61.0",
     "@testing-library/dom": "^10.4.0",
-    "@vitest/coverage-v8": "^2.1.0",
-    "esbuild": "^0.21.5",
+    "@vitest/coverage-v8": "^4.1.9",
+    "esbuild": "^0.28.0",
     "eslint": "^9.10.0",
-    "happy-dom": "^15.7.0",
+    "happy-dom": "^20.10.3",
     "serve": "^14.2.6",
-    "vitest": "^2.1.0"
+    "vitest": "^4.1.9"
   },
   "engines": {
     "node": ">=18"
