@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>sw-date-picker demo</title>
+  <link rel="stylesheet" href="./src/styles/datepicker.css" />
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; padding: 2rem; max-width: 600px; margin: 0 auto; background: #f5f5f7; color: #1d1d1f; }
+    @media (prefers-color-scheme: dark) {
+      body { background: #121214; color: #f5f5f7; }
+    }
+    h1 { font-weight: 800; letter-spacing: -0.5px; }
+    .field { margin-bottom: 2rem; }
+    label { display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.95rem; }
+    input { 
+      padding: 0.75rem 1rem; 
+      font-size: 1rem; 
+      border-radius: 10px; 
+      border: 1px solid rgba(0, 0, 0, 0.15); 
+      background: rgba(255, 255, 255, 0.85); 
+      color: inherit; 
+      width: 284px; 
+      transition: all 0.2s ease;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+    @media (prefers-color-scheme: dark) {
+      input {
+        border-color: rgba(255, 255, 255, 0.15);
+        background: rgba(255, 255, 255, 0.05);
+      }
+    }
+    input:focus {
+      outline: none;
+      border-color: #4f46e5;
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+    }
+  </style>
+</head>
+<body>
+  <h1>sw-date-picker demo</h1>
+
+  <div class="field">
+    <label for="single">Single date</label>
+    <input id="single" type="text" placeholder="Pick a date" data-testid="single-input" />
+  </div>
+
+  <div class="field">
+    <label for="range">Date range</label>
+    <input id="range" type="text" placeholder="Pick a range" data-testid="range-input" />
+  </div>
+
+  <div class="field">
+    <label for="inline">Inline calendar</label>
+    <div id="inline" data-testid="inline-container"></div>
+  </div>
+
+  <script type="module">
+    import { DatePicker } from './src/index.js';
+
+    const single = new DatePicker({ input: document.getElementById('single') });
+
+    const range = new DatePicker({
+      input: document.getElementById('range'),
+      mode: 'range',
+    });
+
+    const inline = new DatePicker({
+      input: document.getElementById('inline'),
+      inline: true,
+    });
+
+    window.__datePickerInstances = { single, range, inline };
+  </script>
+</body>
+</html>

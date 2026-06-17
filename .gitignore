@@ -80,8 +80,16 @@ out
 
 # Nuxt.js build / generate output
 .nuxt
-dist
 .output
+
+# Library bundle (generated on release, tracked to serve CDN users)
+dist
+!dist/sw-date-picker.js
+!dist/sw-date-picker.js.map
+!dist/sw-date-picker.iife.js
+!dist/sw-date-picker.iife.js.map
+!dist/sw-date-picker.css
+!dist/sw-date-picker.css.map
 
 # Gatsby files
 .cache/
